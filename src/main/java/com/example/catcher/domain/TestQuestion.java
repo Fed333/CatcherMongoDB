@@ -1,35 +1,30 @@
 package com.example.catcher.domain;
 
-import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
-@Table(name = "test_questions")
+@Getter
+@Setter
 public class TestQuestion {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_id")
-    private CompletedTest test;
+    public static final Integer maxPoints = 5;
+    public static final Double acceptableSimilarity = 0.75;
 
-    @Column(name="question")
+    @Field(name = "question")
     private String question;
 
-    @Column(name="answer")
+    @Field(name = "answer")
     private String answer;
 
-    @Column(name="rightAnswer")
+    @Field(name="right_answer")
     private String rightAnswer;
 
-    @Column(name = "points")
+    @Field(name = "points")
     private Integer points;
 
-    @Column(name = "similarity")
+    @Field(name = "similarity")
     private Integer similarity;
-
-    public static final Integer maxPoints = 5;              //максимум балів за одне питання
-    public static final Double acceptableSimilarity = 0.75;  //мінімальна схожість для зарахування слова
 
     public TestQuestion() {
         points = 0;
@@ -43,59 +38,4 @@ public class TestQuestion {
         this.rightAnswer = rightAnswer;
     }
 
-    public CompletedTest getTest() {
-        return test;
-    }
-
-    public void setTest(CompletedTest test) {
-        this.test = test;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public Integer getPoints() {
-        return points;
-    }
-
-    public void setPoints(Integer points) {
-        this.points = points;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRightAnswer() {
-        return rightAnswer;
-    }
-
-    public void setRightAnswer(String rightAnswer) {
-        this.rightAnswer = rightAnswer;
-    }
-
-    public Integer getSimilarity() {
-        return similarity;
-    }
-
-    public void setSimilarity(Integer similarity) {
-        this.similarity = similarity;
-    }
 }

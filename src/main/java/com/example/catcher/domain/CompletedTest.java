@@ -1,96 +1,43 @@
 package com.example.catcher.domain;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name="completed_tests")
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@Document(collection = "completed_tests")
 public class CompletedTest {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
+    @Field(name = "user_id")
+    private String userId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User user;
+//    @ReadOnlyProperty
+//    @DocumentReference(lazy = true)
+//    private User user;
 
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "test")
-    @Fetch(value = FetchMode.SUBSELECT)
-    private List<TestQuestion> questions;
-
-
-    @Column(name="user_id", insertable = false, updatable = false)
-    private Long userId;
-
-    @Column(name = "taking_time")
+    @Field(name = "taking_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date takingTime;
 
-    @Column(name = "score")
     private Integer score;
 
+    private List<TestQuestion> questions;
 
     public CompletedTest(){
         takingTime = new Date();
     }
 
-    public CompletedTest(User user, Integer score) {
-        this();
-        this.user = user;
-        this.userId = user.getId();
-        this.score = score;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Date getTakingTime() {
-        return takingTime;
-    }
-
-    public void setTakingTime(Date takingTime) {
-        this.takingTime = takingTime;
-    }
-
-    public Integer getScore() {
-        return score;
-    }
-
-    public void setScore(Integer score) {
-        this.score = score;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public List<TestQuestion> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<TestQuestion> questions) {
-        this.questions = questions;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }

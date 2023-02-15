@@ -57,7 +57,7 @@ public class TestController {
     {
         CompletedTest test = userService.checkTask1(user, task1);
         model.addAttribute("user", user);
-        return String.format("redirect:/test_review/%d", test.getId());
+        return String.format("redirect:/test_review/%s", test.getId());
     }
 
 

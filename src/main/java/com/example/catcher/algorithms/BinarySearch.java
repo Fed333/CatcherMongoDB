@@ -1,8 +1,5 @@
 package com.example.catcher.algorithms;
 
-import com.example.catcher.domain.ProgressWord;
-import com.example.catcher.domain.Word;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 

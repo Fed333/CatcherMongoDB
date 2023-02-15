@@ -1,13 +1,8 @@
 package com.example.catcher.service;
 
 import com.example.catcher.domain.CompletedTest;
-import com.example.catcher.domain.ProgressWord;
 import com.example.catcher.domain.TestQuestion;
-import com.example.catcher.domain.User;
 import com.example.catcher.repos.CompletedTestRepo;
-import com.example.catcher.repos.TestQuestionRepo;
-import org.hibernate.Hibernate;
-import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,28 +15,12 @@ public class CompletedTestService {
     @Autowired
     private CompletedTestRepo completedTestRepo;
 
-    @Autowired
-    private TestQuestionRepo testQuestionRepo;
-
     @Transactional(readOnly = true)
     public List<TestQuestion> getTestQuestion(CompletedTest completedTest){
         if (completedTest == null){
             return null;
         }
-        List<TestQuestion> questions;
-        try{
-            if (!Hibernate.isInitialized(completedTest)) {
-                Hibernate.initialize(completedTest);
-            }
-            questions = completedTest.getQuestions();
-            if (!Hibernate.isInitialized(questions)){
-                Hibernate.initialize(questions);
-            }
-        }
-        catch(LazyInitializationException le){
-            System.out.println("still caught lazyInitializationException");
-            questions = testQuestionRepo.findAllByTestId(completedTest.getId());
-        }
+        List<TestQuestion> questions = completedTest.getQuestions();
         return questions;
 
     }

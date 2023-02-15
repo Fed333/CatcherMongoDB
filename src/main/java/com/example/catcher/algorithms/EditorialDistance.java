@@ -1,12 +1,9 @@
 package com.example.catcher.algorithms;
 
-import com.example.catcher.domain.User;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class EditorialDistance {
     private Map<Pair<String, String>, Integer> hashDistances = new HashMap<>();

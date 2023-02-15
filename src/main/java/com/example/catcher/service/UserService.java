@@ -2,31 +2,22 @@ package com.example.catcher.service;
 
 import com.example.catcher.algorithms.BinarySearch;
 import com.example.catcher.algorithms.EditorialDistance;
-import com.example.catcher.algorithms.SortOrder;
 import com.example.catcher.algorithms.Sorts;
 import com.example.catcher.domain.*;
 import com.example.catcher.dto.Task1QuestionsRequest;
 import com.example.catcher.repos.CompletedTestRepo;
 import com.example.catcher.repos.ProgressWordRepo;
-import com.example.catcher.repos.TestQuestionRepo;
 import com.example.catcher.repos.UserRepo;
-import com.sun.istack.NotNull;
-import com.sun.xml.bind.v2.util.EditDistance;
-import org.aspectj.weaver.ast.Test;
-import org.hibernate.Hibernate;
-import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,9 +36,6 @@ public class UserService implements UserDetailsService {
     @Autowired
     private CompletedTestRepo completedTestRepo;
 
-    @Autowired
-    private TestQuestionRepo testQuestionRepo;
-
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -59,7 +47,7 @@ public class UserService implements UserDetailsService {
         return userRepo.findByLogin(s);
     }
 
-    public User findUserById(Long id){
+    public User findUserById(String id){
         return userRepo.findById(id).get();
     }
 
@@ -168,7 +156,7 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean learnWord(User user, Word word) {
-        List<Long> words = new LinkedList<>();
+        List<String> words = new LinkedList<>();
         List<ProgressWord> vocabulary = this.getVocabulary(user);
         vocabulary.forEach(pw -> {
             words.add(pw.getWord().getId());
@@ -176,7 +164,7 @@ public class UserService implements UserDetailsService {
         boolean isNewWord = !words.contains(word.getId());
         if (isNewWord){
 
-            ProgressWord pw = new ProgressWord(user, word, new Date());
+            ProgressWord pw = new ProgressWord(word, new Date());
             //обов'язково зберігати цей об'єкт в бд. Інакше під час сеансу userRepo.save буде штампувати нові
             progressWordRepo.save(pw);
             vocabulary.add(pw);
@@ -186,7 +174,7 @@ public class UserService implements UserDetailsService {
         return isNewWord;
     }
 
-    public User findById(Long id) {
+    public User findById(String id) {
         return userRepo.findById(id).get();
     }
 
@@ -194,16 +182,7 @@ public class UserService implements UserDetailsService {
 //    @Transactional(readOnly = true)
     public List<ProgressWord> getVocabulary(User user) {
         List<ProgressWord> voc;
-        try {
-            voc = user.getVocabulary();
-            if (!Hibernate.isInitialized(voc)) {
-                Hibernate.initialize(voc);
-            }
-        } catch (LazyInitializationException e) {
-            User userFetched = userRepo.getById(user.getId());
-            voc = userFetched.getVocabulary();
-        }
-
+        voc = user.getVocabulary();
         return voc;
     }
 
@@ -238,7 +217,7 @@ public class UserService implements UserDetailsService {
         Iterator<TestQuestion> rIt = response.iterator();
         while(rIt.hasNext()){ //tq.getQuestion() - питання українські слова, tq.getAnswer() - відповіді англійські
             TestQuestion tq = rIt.next();
-            int index = BinarySearch.binarySearch((ArrayList<ProgressWord>) vocabulary, new ProgressWord(user, new Word(tq.getAnswer(), tq.getQuestion())), comparatorTranslation);
+            int index = BinarySearch.binarySearch((ArrayList<ProgressWord>) vocabulary, new ProgressWord(new Word(tq.getAnswer(), tq.getQuestion())), comparatorTranslation);
             if (index < 0){
                 System.out.println("слова з перекладом " + tq.getQuestion() + " серед списку вивчених слів " + user.getLogin() + " не виявлено");
                 rIt.remove();
@@ -278,21 +257,15 @@ public class UserService implements UserDetailsService {
 
             }
             progressWordRepo.save(progress);
-            tq.setTest(test);
             tq.setSimilarity((int)(similarity*100));
         }
 
         user.setScore(user.getScore()+totalScore);
 
-        test.setUser(user);
         test.setScore(totalScore);
         test.setQuestions(response);
 
         completedTestRepo.save(test);
-
-        test.getQuestions().forEach(q->{
-            testQuestionRepo.save(q);
-        });
 
         user.getCompletedTests().add(test);
         userRepo.save(user);
@@ -302,12 +275,10 @@ public class UserService implements UserDetailsService {
     public CompletedTest getUsersCompletedTest(User user, Long testId) {
         CompletedTest test = null;
         List<CompletedTest> tests = null;
-        try{
-           tests = user.getCompletedTests();
-        }
-        catch(LazyInitializationException le){
-            tests = completedTestRepo.findAllByUserId(user.getId());
-        }
+
+       tests = user.getCompletedTests();
+
+
         if (tests != null) {
             for (CompletedTest t : tests) {
                 if (t.getId().equals(testId)) {
@@ -321,21 +292,11 @@ public class UserService implements UserDetailsService {
 
     public List<TestQuestion> getTask1Review(User user, CompletedTest completedTest) {
         //тест не належить цьому користувачеві
-        Long testId = completedTest.getId();
-        Long userId = user.getId();
+        String testId = completedTest.getId();
+        String userId = user.getId();
         if (!userId.equals(completedTest.getUserId())){
             return null;
         }
-        List<TestQuestion> testQuestions = null;
-        try{
-            testQuestions = completedTest.getQuestions();
-            if (!Hibernate.isInitialized(testQuestions)){
-                Hibernate.initialize(testQuestions);
-            }
-        }
-        catch(LazyInitializationException le){
-            testQuestions = testQuestionRepo.findAllByTestId(testId);
-        }
-        return testQuestions;
+        return completedTest.getQuestions();
     }
 }

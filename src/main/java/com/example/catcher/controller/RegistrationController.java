@@ -1,7 +1,6 @@
 package com.example.catcher.controller;
 
 import com.example.catcher.domain.User;
-import com.example.catcher.repos.UserRepo;
 import com.example.catcher.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

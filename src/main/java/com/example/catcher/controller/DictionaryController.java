@@ -54,7 +54,7 @@ public class DictionaryController {
         List<Word> words = wordService.searchWords(languageFilter, wordFilter, a1, a2, b1, b2, sortCriterion, sortOrder);
 
         List<ProgressWord> vocabulary = userService.getVocabulary(user);
-        LinkedList<Long> words_id = progressWordService.extractWordsId(vocabulary);
+        LinkedList<String> words_id = progressWordService.extractWordsId(vocabulary);
 
         String strArr = words_id.toString();
 
