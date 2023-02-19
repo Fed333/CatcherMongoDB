@@ -292,9 +292,7 @@ public class UserService implements UserDetailsService {
 
     public List<TestQuestion> getTask1Review(User user, CompletedTest completedTest) {
         //тест не належить цьому користувачеві
-        String testId = completedTest.getId();
-        String userId = user.getId();
-        if (!userId.equals(completedTest.getUserId())){
+        if (user.getCompletedTests().stream().noneMatch(ct -> Objects.equals(ct.getId(), completedTest.getId()))){
             return null;
         }
         return completedTest.getQuestions();
