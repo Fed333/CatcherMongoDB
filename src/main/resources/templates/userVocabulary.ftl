@@ -79,7 +79,7 @@
                                         <h6>${pw.word.translation}</h6>
                                         <p class="card-text">Рівень: ${pw.word.level}</p>
                                         <p class="card-text">Дата вивчення: ${pw.learnedDate?date}</p>
-                                        <p class="card-text"><small class="text-muted">Останнє повторення: ${pw.lastRevisionDate!pw.learnedDate?date}</small></p>
+                                        <p class="card-text"><small class="text-muted">Останнє повторення: <#if pw.lastRevisionDate??>${pw.lastRevisionDate?date}<#else>${pw.learnedDate?date}</#if></small></p>
                                     </div>
                                 </div>
                             </div>
