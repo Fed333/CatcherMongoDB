@@ -1,6 +1,8 @@
 package com.example.catcher.domain;
 
 import com.example.catcher.algorithms.Pair;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -12,14 +14,20 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.util.*;
 
 import static com.example.catcher.domain.Level.A1;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @Document(collection = "users")
 public class User implements UserDetails {
+
+    @Serial
+    private static final long serialVersionUID = 7802389881351271921L;
 
     @Id
     private String id;
