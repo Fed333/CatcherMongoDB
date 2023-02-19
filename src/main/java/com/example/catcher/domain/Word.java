@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -17,9 +18,9 @@ public class Word {
     @Id
     private String id;
 
-    private String word;
-
     private String translation;
+
+    private String word;
 
     private Level level;
 
@@ -47,6 +48,23 @@ public class Word {
             return o1.getWord().compareTo(o2.getWord());
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Word)) return false;
+        Word word1 = (Word) o;
+        return Objects.equals(id, word1.id) &&
+                Objects.equals(word, word1.word) &&
+                Objects.equals(translation, word1.translation) &&
+                level == word1.level;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, word, translation, level);
+    }
+
 
     @Override
     public String toString() {
